@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\announcment;
+use App\Models\Announcement;
 use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcments = announcment::all();
+        $announcements = Announcement::all();
         return view('anouncements.index', compact('announcements'));
     }
 
@@ -22,13 +22,24 @@ class AnnouncementController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        announcment::create($request->all());
-        return redirect()->route('anouncements.index');
+        Announcement::create($request->all());
+        return redirect()->route('announcements.index');
     }
 
+    public function active()
+{
+    $today = now()->toDateString();
+    $activeAnnouncements = Announcement::where('start_date', '<=', $today)
+                                       ->where('end_date', '>=', $today)
+                                       ->get();
+    return view('anouncements.active', compact('activeAnnouncements'));
+}
 
-    public function destroy()
+
+
+    public function destroy(Announcement $announcement)
     {
-
+        $announcement->delete();
+        return redirect()->route('announcements.index');
     }
 }
