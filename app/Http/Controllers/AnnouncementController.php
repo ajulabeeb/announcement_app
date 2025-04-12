@@ -45,6 +45,6 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         $this->announcementService->removeAnnouncement($announcement);
-        return redirect()->route('announcements.index');
+        return redirect()->route('announcements.index')->with('success', 'Announcement deleted successfully.');
     }
 }
