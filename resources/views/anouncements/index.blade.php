@@ -27,7 +27,19 @@
                             </button>
                         </form>
                     </div>
-                    <p class="card-text mt-3">{{ $announcement->message }}</p>
+
+                    <!-- Shortened Message -->
+                    <p class="card-text mt-3" id="message-{{ $announcement->id }}">
+                        {{ substr($announcement->message, 0, 150) }} <!-- Truncate to 150 characters -->
+                        @if(strlen($announcement->message) > 150) <!-- Check if message is longer than 150 characters -->
+                        <a href="javascript:void(0);" class="text-primary" data-bs-toggle="modal" data-bs-target="#announcementModal"
+                            data-title="{{ $announcement->title }}"
+                            data-message="{{ $announcement->message }}"
+                            data-start-date="{{ $announcement->start_date }}"
+                            data-end-date="{{ $announcement->end_date }}">View More</a>
+                        @endif
+                    </p>
+
                 </div>
                 <div class="card-footer bg-white border-0 text-end">
                     <small class="text-muted">
@@ -89,4 +101,44 @@
     </div>
 
 </div>
+
+<!-- Modal for Announcement Details -->
+<div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="announcementModalLabel">Announcement Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="modal-announcement-title" class="fw-bold"></h4>
+                <p id="modal-announcement-message"></p>
+                <div id="modal-announcement-dates" class="text-muted"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+    // JavaScript to populate modal with the corresponding announcement details
+    const announcementModal = document.getElementById('announcementModal');
+    announcementModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const announcementTitle = button.getAttribute('data-title');
+        const announcementMessage = button.getAttribute('data-message');
+        const startDate = button.getAttribute('data-start-date');
+        const endDate = button.getAttribute('data-end-date');
+
+        // Update modal's content
+        document.getElementById('modal-announcement-title').innerText = announcementTitle;
+        document.getElementById('modal-announcement-message').innerText = announcementMessage;
+        document.getElementById('modal-announcement-dates').innerText = 'Valid: ' + startDate + ' to ' + endDate;
+    });
+</script>
 @endsection
